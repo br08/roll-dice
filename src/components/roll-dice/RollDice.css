@@ -29,3 +29,9 @@
   background-color: black;
   cursor: default;
 }
+
+@media (max-width: 440px) {
+  .roll-dice .container {
+    font-size: .9em;
+  }
+}
