@@ -2,6 +2,10 @@ import './RollDice.css'
 import React, { Component } from 'react';
 import Die from '../die/Die';
 
+const random = length => {
+  return Math.floor(Math.random() * length)
+}
+
 class RollDice extends Component {
   static defaultProps = {
     faces: ['one', 'two', 'three', 'four', 'five', 'six'],
@@ -13,31 +17,34 @@ class RollDice extends Component {
 
     this.state = {
       rolling: false,
-      dice: this.createDice()
+      dice: this.generateDice(Array.from({length: this.props.numDice}))
     }
 
-    this.roll = this.roll.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
 
-  createDice() {
-    let dice = [];
-
-    for (let i=0; i<this.props.numDice; i++) {
-      const face = Math.floor(Math.random()*this.props.faces.length);
-      dice.push(this.props.faces[face]);
-    }
-
-    return dice;
+  generateDice(dice) {
+    return dice.map(d => this.props.faces[ random(this.props.faces.length) ]);
   }
 
-  roll() {
-    this.setState({
-      rolling: true,
-      dice: this.createDice()
-    });
+  rollDice(state) {
+    return {dice: this.generateDice(state.dice)}
+  }
+
+  startRolling() {
+    return { rolling: true }
+  }
+
+  stopRolling() {
+    return { rolling: false }
+  }
+
+  handleClick() {
+    this.setState(this.startRolling);
+    this.setState(this.rollDice);
 
     setTimeout(() => {
-      this.setState({rolling: false});
+      this.setState(this.stopRolling);
     }, 1000);
   }
 
@@ -50,7 +57,7 @@ class RollDice extends Component {
         <div className="container">
           {dice}
         </div>
-        <button className={`${this.state.rolling && 'rolling'}`} onClick={this.roll} disabled={this.state.rolling}>
+        <button className={`${this.state.rolling && 'rolling'}`} onClick={this.handleClick} disabled={this.state.rolling}>
           {this.state.rolling ? 'Rolling...' : 'Roll Dice!'}
         </button>
       </div>
